@@ -6,86 +6,74 @@ using System.Threading.Tasks;
 
 namespace modul7_1302204034
 {
-    public class Program
+    class Program
     {
-        static void Main(string[] args)
+        public static void Main()
         {
-            BankTransferConfig bankConfig = new BankTransferConfig();
-            dynamic conf = bankConfig.ReadJson();
+            BankTransferConfig config = new BankTransferConfig();
+            config.Load();
 
-            if (conf.lang == "en")
+            if (config.lang == "id")
             {
-                Console.WriteLine("Please insert the amount of money to transfer:");
-            }
-            else if (conf.lang == "id")
-            {
-                Console.WriteLine("Masukkan jumlah uang yang akan di-transfer:");
-            }
-            string uangDiTranferStr = Console.ReadLine();
-
-            int uangDiTransfer = int.Parse(uangDiTranferStr);
-
-            int biayaTransfer;
-
-            if (uangDiTransfer <= (int)conf.transfer.threshold)
-            {
-                biayaTransfer = conf.transfer.low_fee;
+                Console.WriteLine("Masukkan jumlah uang yang akan di-transfer");
             }
             else
             {
-                biayaTransfer = conf.transfer.high_fee;
+                Console.WriteLine("Please insert the amount of money to transfer:");
+            }
+            int input1 = int.Parse(Console.ReadLine());
+
+            int biayaTransfer;
+            if (input1 <= config.transfer.threshold)
+            {
+                biayaTransfer = config.transfer.low_fee;
+            }
+            else
+            {
+                biayaTransfer = config.transfer.high_fee;
             }
 
-            if (conf.lang == "en")
+            if (config.lang == "id")
             {
-                Console.WriteLine("Transfer fee = " + biayaTransfer);
-                Console.WriteLine("Total amount = " + (biayaTransfer + uangDiTransfer) + "\n");
-                Console.WriteLine("Select transfer method");
+                Console.WriteLine($"Total biaya = {input1 + biayaTransfer}");
+                Console.WriteLine("Pilih metode transfer:");
             }
-            else if (conf.lang == "id")
+            else
             {
-                Console.WriteLine("Biaya transfer = " + biayaTransfer);
-                Console.WriteLine("Total biaya = " + (biayaTransfer + uangDiTransfer) + "\n");
-                Console.WriteLine("Pilih metode transfer");
-            }
-            int index = 0;
-
-            foreach (var mthd in conf.methods)
-            {
-                index++;
-                Console.WriteLine(index + ". " + mthd);
+                Console.WriteLine($"Total amount = {input1 + biayaTransfer}");
+                Console.WriteLine("Select transfer method:");
             }
 
-            Console.WriteLine();
-            string confirm;
-            if (conf.lang == "en")
+            int iter = 1;
+            foreach (string item in config.methods)
             {
-                Console.WriteLine("Please type '" + conf.confirmation.en + "' to confirm the transaction:");
-
-                confirm = Console.ReadLine();
-
-                if (confirm == (string)conf.confirmation.en)
-                {
-                    Console.WriteLine("The transfer is completed");
-                }
-                else
-                {
-                    Console.WriteLine("Transfer is cancelled");
-                }
+                Console.WriteLine(iter.ToString() + ". " + item);
+                iter++;
             }
-            else if (conf.lang == "id")
+            string input2 = Console.ReadLine();
+
+            if (config.lang == "id")
             {
-                Console.WriteLine("Ketik '" + conf.confirmation.id + "' untuk mengkonfirmasi transaksi:");
-
-                confirm = Console.ReadLine();
-
-                if (confirm == (string)conf.confirmation.id)
+                Console.WriteLine($"Ketik { config.confirmation.id } untuk mengkonfirmasi transaksi:");
+                if (Console.ReadLine() == config.confirmation.id)
                 {
                     Console.WriteLine("Proses transfer berhasil");
                 }
                 else
                 {
                     Console.WriteLine("Transfer dibatalkan");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Please type { config.confirmation.en } to confirm the transaction:");
+                if (Console.ReadLine() == config.confirmation.en)
+                {
+                    Console.WriteLine("The transfer is completed");
+                }
+                else
+                {
+                    Console.WriteLine("Transfer is cancelled");
                 }
             }
         }
